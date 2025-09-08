@@ -2,20 +2,17 @@
 <html>
 
 <head>
-    <title>UV</title>
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-        }
-    </style>
+    <meta charset="utf-8" />
+    <title>Gingerbread-Robot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>html,body{height:100%;margin:0} canvas{display:block}</style>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/RGBELoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dat.gui/build/dat.gui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 
 <body>
-    <!-- core three.js -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
     <script>
 
@@ -95,25 +92,22 @@
         ground.receiveShadow = true;
         scene.add(ground);
 
+        const buildingMat = new THREE.MeshStandardMaterial({ color: 0xff5555, roughness: 0.4, metalness: 0.1 });
+        const building = new THREE.Mesh(new THREE.BoxGeometry(2, 17, 3), buildingMat);
+        building.position.set(7, 1.5, 0);
+        building.castShadow = true;
+        building.receiveShadow = true;
+        scene.add(building);
 
-        /*const loader = new THREE.OBJLoader();
-        loader.load('https://mintdes.github.io/gpumesh/Jinhsi.obj', function (object) {
-            object.castShadow = true; // ✅ วัตถุนี้สร้างเงา
-            // ตั้งค่า castShadow กับทุก mesh ใน object
-            object.traverse(function (child) {
-                if (child.isMesh) {
-                    child.castShadow = true;
-                    child.receiveShadow = true;
-                    child.material = new THREE.MeshStandardMaterial({
-                        color: 0xffffff
-                    });
-                }
-            });
-            scene.add(object);
-        }, undefined, function (error) {
-            console.error('Error loading OBJ:', error);
-        });*/
+        
 
+        const envMap = new THREE.RGBELoader()
+        .setDataType(THREE.UnsignedByteType) // ใช้ข้อมูลแบบ UnsignedByte
+        .load('https://mintdes.github.io/gpumesh/quadrangle_sunny_2k.hdr', function(texture) {
+            texture.mapping = THREE.EquirectangularReflectionMapping;
+            scene.background = texture
+            scene.environment = texture;
+        });
 
         // ✅ render loop
         function animate(t) {
